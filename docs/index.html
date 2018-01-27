@@ -1,1 +1,119 @@
-Hi
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="カレンダー,calendar">
+    <meta name="description" content="時間が手前から奥に流れるカレンダーです。">
+    <title>cal</title>
+    <!-- favicon (https://realfavicongenerator.net/) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+    <!-- og -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:creator" content="@inaniwa3">
+    <meta property="og:title" content="cal">
+    <meta property="og:description" content="時間が手前から奥に流れるカレンダーです。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://inaniwa3.github.io/cal/">
+    <meta property="og:image" content="https://inaniwa3.github.io/cal/img/og.png">
+    <!-- iOS Safari (Add to Home Screen) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- lib -->
+    <link rel="stylesheet" href="lib/balloon.css">
+    <script type="text/javascript" src="lib/fastclick.js"></script>
+    <!-- cal -->
+    <style type="text/css">
+    body {
+        background-color: #FFFFFF;
+        margin: 20px 0px 20px;
+        padding: 0px;
+    }
+    button {
+        display: block;
+        margin: 17px auto 17px;
+        height: 56px;
+        width: 56px;
+        border-radius: 50%;
+    }
+    *:focus {  /* erase blue line (Chrome) */
+        outline: none;
+    }
+    </style>
+    <script type="text/javascript" src="cal/public-holiday.js"></script>
+    <script type="text/javascript" src="cal/private-schedule.js"></script>
+    <script type="text/javascript">
+    function grayColor(c) {
+        return '#' + Array(3 + 1).join(c.toString(16).toUpperCase());
+    }
+    function genButtons() {
+        const n = 365;
+        const cs = 0xCC;
+        const ce = 0xFF;
+        var date = new Date();
+        var html = '';
+        for (var i = 0; i < n; i++) {
+            // date
+            var dy = date.getFullYear();
+            var dm = date.getMonth() + 1;
+            var dw = date.getDay();
+            var dd = date.getDate();
+            // color
+            var c = (i < n - (ce - cs) ? cs : ce + (i - n));
+            // off/on
+            var o = (dw == 0 || dw == 6);
+            // overwrite: public-holiday
+            var k = dy + '-' + ('0' + dm).slice(-2) + '-' + ('0' + dd).slice(-2);
+            if (PUBLIC_HOLIDAY.indexOf(k) >= 0) { o = true };
+            // overwrite: private-schedule
+            var ab1 = '';
+            if (Object.keys(PRIVATE_SCHEDULE).indexOf(k) >= 0) {
+                var ps = PRIVATE_SCHEDULE[k];
+                ab1 = ' ' + ps[0];
+                c = Math.max(c - 0x10, 0x00);
+                o = (ps[1] == "○" ? true : (ps[1] == "●") ? false : o);
+            }
+            // attr: data-balloon
+            var ab0 = i + ' (' + dm + '/' + dd + ')';
+            // attr: style
+            var as = 'border: solid 6px ' + grayColor(c) + '; '
+                   + 'background-color: ' + grayColor(o ? ce : c);
+            // html
+            html = '<button '
+                 + 'data-balloon="' + ab0 + ab1 + '" '
+                 + 'data-balloon-pos="up" '
+                 + 'style="' + as + ';"'
+                 + '></button>'
+                 + html;
+            date.setDate(dd + 1);
+        }
+        return html;
+    }
+    function rendered() {
+        window.scrollTo(0, document.body.scrollHeight);
+        // eliminate the 300ms delay (iOS Full Screen)
+        FastClick.attach(document.body);
+    }
+    function startRender() {
+        requestAnimationFrame(rendered);
+    }
+    function loaded() {
+        requestAnimationFrame(startRender);
+    }
+    window.onload = function() {
+        document.getElementById("buttons").innerHTML = genButtons();
+        var bh = document.getElementsByTagName("button")[0].offsetHeight;
+        document.body.style.marginBottom = (window.innerHeight - bh) / 2 + 'px';
+        loaded();
+    }
+    </script>
+</head>
+<body>
+    <div id="buttons"></div>
+</body>
+</html>
