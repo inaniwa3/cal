@@ -1,6 +1,6 @@
 # cal
 
-TBD
+Straight Calendar
 
 ## Demo
 
