@@ -106,15 +106,14 @@
         requestAnimationFrame(startRender);
     }
     window.onload = function() {
-        // document.getElementById("buttons").innerHTML = genButtons();
-        // var bh = document.getElementsByTagName("button")[0].offsetHeight;
-        // document.body.style.marginBottom = (window.innerHeight - bh) / 2 + 'px';
-        // loaded();
+        document.getElementById("buttons").innerHTML = genButtons();
+        var bh = document.getElementsByTagName("button")[0].offsetHeight;
+        document.body.style.marginBottom = (window.innerHeight - bh) / 2 + 'px';
+        loaded();
     }
     </script>
 </head>
 <body>
-    <!-- <div id="buttons"></div> -->
-    <div style="text-align: center">closed</div>
+    <div id="buttons"></div>
 </body>
 </html>
